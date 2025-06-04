@@ -90,20 +90,20 @@ func Update(box *env.Box) http.HandlerFunc {
 			case "text/plain":
 
 				var (
-					partsUrlPath []string
+					partsURLPath []string
 					metricType   string
 					metricName   string
 					metricVal    string
 				)
 
-				partsUrlPath = sharePath(req)
-				metricType, statusHTTP, err := withMetricType(req, partsUrlPath)
+				partsURLPath = sharePath(req)
+				metricType, statusHTTP, err := withMetricType(req, partsURLPath)
 				if err != nil {
 					http.Error(resp, err.Error(), statusHTTP)
 					return
 				}
 
-				metricName, statusHTTP, err = withMetricName(req, partsUrlPath)
+				metricName, statusHTTP, err = withMetricName(req, partsURLPath)
 				if err != nil {
 					http.Error(resp, err.Error(), statusHTTP)
 					return
@@ -111,7 +111,7 @@ func Update(box *env.Box) http.HandlerFunc {
 
 				switch metricType {
 				case cnst.COUNTER:
-					metricValue, statusHTTP, err := withCounterValue(partsUrlPath)
+					metricValue, statusHTTP, err := withCounterValue(partsURLPath)
 					if err != nil {
 						http.Error(resp, err.Error(), statusHTTP)
 						return
@@ -119,7 +119,7 @@ func Update(box *env.Box) http.HandlerFunc {
 					box.GetCounterManager().UpdateCounter(metricName, metricValue)
 					metricVal = fmt.Sprintf("%v", metricValue)
 				case cnst.GAUGE:
-					metricValue, statusHTTP, err := withGaugeValue(partsUrlPath)
+					metricValue, statusHTTP, err := withGaugeValue(partsURLPath)
 					if err != nil {
 						http.Error(resp, err.Error(), statusHTTP)
 						return
