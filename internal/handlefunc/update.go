@@ -135,7 +135,6 @@ func Update(box *env.Box) http.HandlerFunc {
 				resp.WriteHeader(http.StatusOK)
 				respText := fmt.Sprintf("Metric with type - '%s' with name - '%s' with value - '%s' added successfuly.", metricType, metricName, metricVal)
 				resp.Write([]byte(respText))
-				fmt.Println(box.GetGaugeManager().ShowAllGauges(), box.GetCounterManager().ShowAllCounters())
 				return
 			default:
 				errString := fmt.Sprintf("content-type - '%s' not supported.", req.Header.Get("content-type"))

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	serv_http "github.com/RuslanSemenikhin/go-service-with-metrics.git/cmd/server/http"
@@ -20,7 +20,7 @@ func init() {
 	SRV = serv_http.NewSrv().WithBox(box)
 }
 
-func main() {
+func Start() {
 	if err := serv_http.StartServer(`:8080`, SRV); err != nil {
 		panic(err)
 	}
