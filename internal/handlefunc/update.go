@@ -18,11 +18,11 @@ func sharePath(req *http.Request) []string {
 	return slcPath
 }
 
-func checkValueAndQuantityParams(partsUrlPath []string) error {
-	if len(partsUrlPath) < 4 {
+func checkValueAndQuantityParams(partsURLPath []string) error {
+	if len(partsURLPath) < 4 {
 		errString := "value metric was not received, must have value metric with type - 'float64'"
 		return errors.New(errString)
-	} else if len(partsUrlPath) > 4 {
+	} else if len(partsURLPath) > 4 {
 		errString := "many parameters passed, request must have - 4 params"
 		return errors.New(errString)
 	} else {
@@ -30,13 +30,13 @@ func checkValueAndQuantityParams(partsUrlPath []string) error {
 	}
 }
 
-func withMetricType(req *http.Request, partsUrlPath []string) (string, int, error) {
-	if len(partsUrlPath) < 2 || strings.TrimSpace(partsUrlPath[1]) == "" {
+func withMetricType(req *http.Request, partsURLPath []string) (string, int, error) {
+	if len(partsURLPath) < 2 || strings.TrimSpace(partsURLPath[1]) == "" {
 		errString := fmt.Sprintf("Incorrect url-path - '%s'. Type metric is missing.", req.URL.Path)
 		return "", http.StatusBadRequest, errors.New(errString)
 	}
 
-	metricType := partsUrlPath[1]
+	metricType := partsURLPath[1]
 	if metricType != cnst.GAUGE && metricType != cnst.COUNTER {
 		errString := fmt.Sprintf("Incorrect type metric - '%s'.", metricType)
 		return "", http.StatusBadRequest, errors.New(errString)
@@ -45,38 +45,38 @@ func withMetricType(req *http.Request, partsUrlPath []string) (string, int, erro
 	return metricType, 0, nil
 }
 
-func withMetricName(req *http.Request, partsUrlPath []string) (string, int, error) {
-	if len(partsUrlPath) < 3 || strings.TrimSpace(partsUrlPath[2]) == "" {
+func withMetricName(req *http.Request, partsURLPath []string) (string, int, error) {
+	if len(partsURLPath) < 3 || strings.TrimSpace(partsURLPath[2]) == "" {
 		errString := fmt.Sprintf("Incorrect url-path - '%s'. Name metric is missing.", req.URL.Path)
 		return "", http.StatusNotFound, errors.New(errString)
 	}
 
 	// TODO: maybe checking pattern name (Regexp)...
-	metricName := strings.TrimSpace(partsUrlPath[2])
+	metricName := strings.TrimSpace(partsURLPath[2])
 	return metricName, 0, nil
 }
 
-func withGaugeValue(partsUrlPath []string) (float64, int, error) {
-	err := checkValueAndQuantityParams(partsUrlPath)
+func withGaugeValue(partsURLPath []string) (float64, int, error) {
+	err := checkValueAndQuantityParams(partsURLPath)
 	if err != nil {
 		return 0, http.StatusBadRequest, err
 	}
-	floatVal, err := strconv.ParseFloat(partsUrlPath[3], 64)
+	floatVal, err := strconv.ParseFloat(partsURLPath[3], 64)
 	if err != nil {
-		errString := fmt.Sprintf("Incorrect value metric - '%s' must have type 'float64'", partsUrlPath[3])
+		errString := fmt.Sprintf("Incorrect value metric - '%s' must have type 'float64'", partsURLPath[3])
 		return 0, http.StatusBadRequest, errors.New(errString)
 	}
 	return floatVal, 0, nil
 }
 
-func withCounterValue(partsUrlPath []string) (int64, int, error) {
-	err := checkValueAndQuantityParams(partsUrlPath)
+func withCounterValue(partsURLPath []string) (int64, int, error) {
+	err := checkValueAndQuantityParams(partsURLPath)
 	if err != nil {
 		return 0, http.StatusBadRequest, err
 	}
-	intVal, err := strconv.Atoi(partsUrlPath[3])
+	intVal, err := strconv.Atoi(partsURLPath[3])
 	if err != nil {
-		errString := fmt.Sprintf("Incorrect value metric - '%s' must have type 'int64'", partsUrlPath[3])
+		errString := fmt.Sprintf("Incorrect value metric - '%s' must have type 'int64'", partsURLPath[3])
 		return 0, http.StatusBadRequest, errors.New(errString)
 	}
 	return int64(intVal), 0, nil
@@ -97,31 +97,31 @@ func Update(box *env.Box) http.HandlerFunc {
 				)
 
 				partsUrlPath = sharePath(req)
-				metricType, statusHttp, err := withMetricType(req, partsUrlPath)
+				metricType, statusHTTP, err := withMetricType(req, partsUrlPath)
 				if err != nil {
-					http.Error(resp, err.Error(), statusHttp)
+					http.Error(resp, err.Error(), statusHTTP)
 					return
 				}
 
-				metricName, statusHttp, err = withMetricName(req, partsUrlPath)
+				metricName, statusHTTP, err = withMetricName(req, partsUrlPath)
 				if err != nil {
-					http.Error(resp, err.Error(), statusHttp)
+					http.Error(resp, err.Error(), statusHTTP)
 					return
 				}
 
 				switch metricType {
 				case cnst.COUNTER:
-					metricValue, statusHttp, err := withCounterValue(partsUrlPath)
+					metricValue, statusHTTP, err := withCounterValue(partsUrlPath)
 					if err != nil {
-						http.Error(resp, err.Error(), statusHttp)
+						http.Error(resp, err.Error(), statusHTTP)
 						return
 					}
 					box.GetCounterManager().UpdateCounter(metricName, metricValue)
 					metricVal = fmt.Sprintf("%v", metricValue)
 				case cnst.GAUGE:
-					metricValue, statusHttp, err := withGaugeValue(partsUrlPath)
+					metricValue, statusHTTP, err := withGaugeValue(partsUrlPath)
 					if err != nil {
-						http.Error(resp, err.Error(), statusHttp)
+						http.Error(resp, err.Error(), statusHTTP)
 						return
 					}
 					box.GetGaugeManager().UpdateGauge(metricName, metricValue)
