@@ -35,7 +35,7 @@ func (s *Storage) IsEmptyCounter() bool {
 	return len(s.counterHistory) == 0
 }
 
-func (s *Storage) GetGaugesByName(name string) (float64, error) {
+func (s *Storage) GetGaugesByName(name string) (float64, error) { //+
 	s.mtx.RLock()
 	defer s.mtx.RUnlock()
 	if len(s.gaugeHistory) == 0 {
@@ -52,7 +52,7 @@ func (s *Storage) GetGaugesByName(name string) (float64, error) {
 	}
 }
 
-func (s *Storage) GetCountersByName(name string) (int64, error) {
+func (s *Storage) GetCountersByName(name string) (int64, error) { //+
 	s.mtx.RLock()
 	defer s.mtx.RUnlock()
 	if len(s.counterHistory) == 0 {
@@ -69,13 +69,13 @@ func (s *Storage) GetCountersByName(name string) (int64, error) {
 	}
 }
 
-func (s *Storage) UpdateGauge(name string, val float64) {
+func (s *Storage) UpdateGauge(name string, val float64) { //+
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 	s.gaugeHistory[name] = append([]float64{val}, s.gaugeHistory[name]...)
 }
 
-func (s *Storage) UpdateCounter(name string, val int64) {
+func (s *Storage) UpdateCounter(name string, val int64) { //+
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 	if slcMaps, ok := s.counterHistory[name]; !ok {
