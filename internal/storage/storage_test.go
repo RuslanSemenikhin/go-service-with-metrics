@@ -8,7 +8,6 @@ import (
 
 func TestStorage_UpdateGauge(t *testing.T) {
 	type fields struct {
-		mtx            sync.RWMutex
 		gaugeHistory   map[string][]float64
 		counterHistory map[string][]map[string]int64
 	}
@@ -37,7 +36,7 @@ func TestStorage_UpdateGauge(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Storage{
-				mtx:            tt.fields.mtx,
+				mtx:            sync.RWMutex{},
 				gaugeHistory:   tt.fields.gaugeHistory,
 				counterHistory: tt.fields.counterHistory,
 			}
@@ -48,7 +47,6 @@ func TestStorage_UpdateGauge(t *testing.T) {
 
 func TestStorage_GetGaugesByName(t *testing.T) {
 	type fields struct {
-		mtx            sync.RWMutex
 		gaugeHistory   map[string][]float64
 		counterHistory map[string][]map[string]int64
 	}
@@ -100,7 +98,7 @@ func TestStorage_GetGaugesByName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Storage{
-				mtx:            tt.fields.mtx,
+				mtx:            sync.RWMutex{},
 				gaugeHistory:   tt.fields.gaugeHistory,
 				counterHistory: tt.fields.counterHistory,
 			}
@@ -118,7 +116,6 @@ func TestStorage_GetGaugesByName(t *testing.T) {
 
 func TestStorage_UpdateCounter(t *testing.T) {
 	type fields struct {
-		mtx            sync.RWMutex
 		gaugeHistory   map[string][]float64
 		counterHistory map[string][]map[string]int64
 	}
@@ -161,7 +158,7 @@ func TestStorage_UpdateCounter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Storage{
-				mtx:            tt.fields.mtx,
+				mtx:            sync.RWMutex{},
 				gaugeHistory:   tt.fields.gaugeHistory,
 				counterHistory: tt.fields.counterHistory,
 			}
@@ -173,7 +170,6 @@ func TestStorage_UpdateCounter(t *testing.T) {
 
 func TestStorage_GetCountersByName(t *testing.T) {
 	type fields struct {
-		mtx            sync.RWMutex
 		gaugeHistory   map[string][]float64
 		counterHistory map[string][]map[string]int64
 	}
@@ -258,7 +254,7 @@ func TestStorage_GetCountersByName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Storage{
-				mtx:            tt.fields.mtx,
+				mtx:            sync.RWMutex{},
 				gaugeHistory:   tt.fields.gaugeHistory,
 				counterHistory: tt.fields.counterHistory,
 			}

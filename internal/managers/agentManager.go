@@ -171,7 +171,7 @@ func (am *AgentManager) collectMetrics() {
 		}
 	}
 
-	for key, _ := range am.counter {
+	for key := range am.counter {
 		am.counter[key] += 1
 	}
 }
