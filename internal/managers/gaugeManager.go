@@ -34,6 +34,6 @@ func (gm *GaugeManage) GetActualGaugesMetrics() map[string]float64 {
 	return gm.storage.GetActualGauges()
 }
 
-func (cm *GaugeManage) GetMetricValueByName(name string) (float64, error) {
-	return cm.storage.GetGaugesByName(name)
+func (gm *GaugeManage) GetMetricValueByName(name string) (float64, error) {
+	return gm.storage.GetGaugesByName(name)
 }
