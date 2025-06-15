@@ -3,11 +3,10 @@ package handlefunc
 import (
 	"errors"
 	"fmt"
-	"slices"
 	"strconv"
+	"strings"
 
 	cnst "github.com/RuslanSemenikhin/go-service-with-metrics.git/internal/consts"
-	"github.com/RuslanSemenikhin/go-service-with-metrics.git/internal/env"
 )
 
 func CheckTypeMetric(typeMetric string) error {
@@ -19,22 +18,25 @@ func CheckTypeMetric(typeMetric string) error {
 }
 
 func CheckNameMetric(typeMetric, nameMetric string) error {
-	switch typeMetric {
-	case cnst.COUNTER:
-		if ok := slices.Contains(env.CounterMetricsNames, nameMetric); ok {
-			return nil
-		}
-	case cnst.GAUGE:
-		if ok := slices.Contains(env.GaugeMetricsNames, nameMetric); ok {
-			return nil
-		}
-	default:
-		errString := fmt.Sprintf("Incorrect metric type - '%s'", typeMetric)
+	// switch typeMetric {
+	// case cnst.COUNTER:
+	// 	if ok := slices.Contains(env.CounterMetricsNames, nameMetric); ok {
+	// 		return nil
+	// 	}
+	// case cnst.GAUGE:
+	// 	if ok := slices.Contains(env.GaugeMetricsNames, nameMetric); ok {
+	// 		return nil
+	// 	}
+	// default:
+	// 	errString := fmt.Sprintf("Incorrect metric type - '%s'", typeMetric)
+	// 	return errors.New(errString)
+	// }
+	if strings.TrimSpace(nameMetric) == "" {
+		errString := fmt.Sprintf("Incorrect url-param (metricName) - '%s'. Name metric is missing.", nameMetric)
+		// errString := fmt.Sprintf("Metric name - '%s' with metric type - '%s' does not exists", nameMetric, typeMetric)
 		return errors.New(errString)
 	}
-
-	errString := fmt.Sprintf("Metric name - '%s' with metric type - '%s' does not exists", nameMetric, typeMetric)
-	return errors.New(errString)
+	return nil
 }
 
 func CheckCounterValue(val string) (int64, error) {
