@@ -4,10 +4,6 @@ import (
 	"github.com/RuslanSemenikhin/go-service-with-metrics.git/internal/managers"
 )
 
-var (
-	BOX *Box
-)
-
 type Box struct {
 	gaugeManager   *managers.GaugeManage
 	counterManager *managers.CaunterManage

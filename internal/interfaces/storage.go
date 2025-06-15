@@ -9,4 +9,6 @@ type StorageInterface interface {
 	UpdateCounter(string, int64)
 	GetCounterHistory() map[string][]map[string]int64
 	GetGaugeHistory() map[string][]float64
+	GetActualCounters() map[string]int64
+	GetActualGauges() map[string]float64
 }

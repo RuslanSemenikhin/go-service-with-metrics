@@ -29,3 +29,11 @@ func (gm *GaugeManage) UpdateGauge(name string, val float64) {
 func (gm *GaugeManage) ShowAllGauges() map[string][]float64 {
 	return gm.storage.GetGaugeHistory()
 }
+
+func (gm *GaugeManage) GetActualGaugesMetrics() map[string]float64 {
+	return gm.storage.GetActualGauges()
+}
+
+func (cm *GaugeManage) GetMetricValueByName(name string) (float64, error) {
+	return cm.storage.GetGaugesByName(name)
+}

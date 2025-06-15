@@ -1,31 +1,34 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/RuslanSemenikhin/go-service-with-metrics.git/internal/env"
 	"github.com/RuslanSemenikhin/go-service-with-metrics.git/internal/handlefunc"
+	mw "github.com/RuslanSemenikhin/go-service-with-metrics.git/internal/middleware"
+	g "github.com/gin-gonic/gin"
 )
 
 type Srv struct {
-	mtx    sync.RWMutex
-	srvMax *http.ServeMux
-	box    *env.Box
+	mtx sync.RWMutex
+	srv *g.Engine
+	box *env.Box
 }
 
 func NewSrv() *Srv {
-	newSrv := http.NewServeMux()
 	return &Srv{
-		srvMax: newSrv,
+		srv: g.New(),
 	}
 }
 
-func StartServer(port string, srv *Srv) error {
-	s := srv.GetSrv()
-	srv.InitializeRoutes()
-	err := http.ListenAndServe(port, s.srvMax)
-	return err
+func (s *Srv) StartServer(port string) error {
+	s.RegistrateRoutes()
+	if err := s.srv.Run(port); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Srv) WithBox(b *env.Box) *Srv {
@@ -35,9 +38,19 @@ func (s *Srv) WithBox(b *env.Box) *Srv {
 	return s
 }
 
-func (s *Srv) InitializeRoutes() {
-	s.srvMax.HandleFunc(`/update/`, handlefunc.Update(s.box))
+func (s *Srv) RegistrateRoutes() {
+	s.srv.Use(g.CustomRecovery(mw.MiddlewareRecovery))
+	s.srv.NoMethod(func(ctx *g.Context) {
+		ctx.AbortWithStatusJSON(http.StatusMethodNotAllowed, g.H{
+			"error": fmt.Sprintf("method not allowed, incoming method - '%s'", ctx.Request.Method),
+		})
+	})
+	s.srv.LoadHTMLGlob(`./go-service-with-metrics/internal/templates/*.tmpl`)
 
+	s.srv.GET(`/`, handlefunc.GetAllMetrics(s.box))
+	s.srv.GET(`/value/:metricType/:metricName`, handlefunc.GetMetricValueByName(s.box))
+
+	s.srv.POST(`/update/:metricType/:metricName/:metricValue`, handlefunc.Update(s.box))
 }
 
 func (s *Srv) GetSrv() *Srv {

@@ -21,7 +21,7 @@ func init() {
 }
 
 func main() {
-	if err := serv_http.StartServer(`:8080`, SRV); err != nil {
+	if err := SRV.StartServer(`:8080`); err != nil {
 		panic(err)
 	}
 }
