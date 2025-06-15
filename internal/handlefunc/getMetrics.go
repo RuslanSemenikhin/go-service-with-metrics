@@ -29,10 +29,10 @@ func GetAllMetrics(b *env.Box) g.HandlerFunc {
 func GetMetricValueByName(b *env.Box) g.HandlerFunc {
 	return func(ctx *g.Context) {
 		var (
-			metricType string = ctx.Param(`metricType`)
-			metricName string = ctx.Param(`metricName`)
-			err        error
+			err error
 		)
+		metricType := ctx.Param(`metricType`)
+		metricName := ctx.Param(`metricName`)
 
 		err = CheckTypeMetric(metricType)
 		if err != nil {

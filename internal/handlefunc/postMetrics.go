@@ -14,11 +14,9 @@ func Update(box *env.Box) g.HandlerFunc {
 		switch ctx.Request.Header.Get("content-type") {
 		case "text/plain":
 
-			var (
-				metricType string = ctx.Param(`metricType`)
-				metricName string = ctx.Param(`metricName`)
-				metricVal  string = ctx.Param(`metricValue`)
-			)
+			metricType := ctx.Param(`metricType`)
+			metricName := ctx.Param(`metricName`)
+			metricVal := ctx.Param(`metricValue`)
 
 			err := CheckTypeMetric(metricType)
 			if err != nil {
