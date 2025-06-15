@@ -3,6 +3,8 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
+	"runtime"
 	"sync"
 
 	"github.com/RuslanSemenikhin/go-service-with-metrics.git/internal/env"
@@ -45,12 +47,20 @@ func (s *Srv) RegistrateRoutes() {
 			"error": fmt.Sprintf("method not allowed, incoming method - '%s'", ctx.Request.Method),
 		})
 	})
-	s.srv.LoadHTMLGlob(`./go-service-with-metrics/internal/templates/*.tmpl`)
+
+	s.srv.LoadHTMLGlob(s.GetPathToTemplates())
 
 	s.srv.GET(`/`, handlefunc.GetAllMetrics(s.box))
 	s.srv.GET(`/value/:metricType/:metricName`, handlefunc.GetMetricValueByName(s.box))
 
 	s.srv.POST(`/update/:metricType/:metricName/:metricValue`, handlefunc.Update(s.box))
+}
+
+func (s *Srv) GetPathToTemplates() string {
+	_, filename, _, _ := runtime.Caller(0)
+	basePath := filepath.Dir(filename)
+	tmplPath := filepath.Join(basePath, "..", "..", "..", "internal", "templates", "*.tmpl")
+	return tmplPath
 }
 
 func (s *Srv) GetSrv() *Srv {
