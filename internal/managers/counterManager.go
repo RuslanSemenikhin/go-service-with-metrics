@@ -29,3 +29,11 @@ func (cm *CaunterManage) UpdateCounter(name string, val int64) {
 func (cm *CaunterManage) ShowAllCounters() map[string][]map[string]int64 {
 	return cm.storage.GetCounterHistory()
 }
+
+func (cm *CaunterManage) GetActualCountersMetrics() map[string]int64 {
+	return cm.storage.GetActualCounters()
+}
+
+func (cm *CaunterManage) GetMetricValueByName(name string) (int64, error) {
+	return cm.storage.GetCountersByName(name)
+}

@@ -35,6 +35,68 @@ func (s *Storage) IsEmptyCounter() bool {
 	return len(s.counterHistory) == 0
 }
 
+func (s *Storage) GetGaugeHistory() map[string][]float64 {
+	s.mtx.RLock()
+	defer s.mtx.RUnlock()
+	copyHistory := make(map[string][]float64, len(s.gaugeHistory))
+
+	for key, slc := range s.gaugeHistory {
+		copySlc := make([]float64, len(slc))
+		copy(copySlc, slc)
+		copyHistory[key] = copySlc
+	}
+	return copyHistory
+}
+
+func (s *Storage) GetCounterHistory() map[string][]map[string]int64 {
+	s.mtx.RLock()
+	defer s.mtx.RUnlock()
+	copyHistory := make(map[string][]map[string]int64, len(s.counterHistory))
+
+	for key, slc := range s.counterHistory {
+		copySlc := make([]map[string]int64, 0, len(slc))
+		for _, mp := range slc {
+			copyMp := make(map[string]int64)
+			for k, v := range mp {
+				copyMp[k] = v
+			}
+			copySlc = append(copySlc, copyMp)
+		}
+		copyHistory[key] = copySlc
+	}
+	return copyHistory
+}
+
+func (s *Storage) GetActualCounters() map[string]int64 {
+	s.mtx.RLock()
+	defer s.mtx.RUnlock()
+	switch len(s.counterHistory) {
+	case 0:
+		return nil
+	default:
+		newMap := make(map[string]int64)
+		for key, slc := range s.counterHistory {
+			newMap[key] = slc[0][`counter`]
+		}
+		return newMap
+	}
+}
+
+func (s *Storage) GetActualGauges() map[string]float64 {
+	s.mtx.RLock()
+	defer s.mtx.RUnlock()
+	switch len(s.gaugeHistory) {
+	case 0:
+		return nil
+	default:
+		newMap := make(map[string]float64)
+		for key, slc := range s.gaugeHistory {
+			newMap[key] = slc[0]
+		}
+		return newMap
+	}
+}
+
 func (s *Storage) GetGaugesByName(name string) (float64, error) { //+
 	s.mtx.RLock()
 	defer s.mtx.RUnlock()
@@ -94,36 +156,4 @@ func (s *Storage) UpdateCounter(name string, val int64) { //+
 		slc := append([]map[string]int64{newMap}, slcMaps...)
 		s.counterHistory[name] = slc
 	}
-}
-
-func (s *Storage) GetGaugeHistory() map[string][]float64 {
-	s.mtx.RLock()
-	defer s.mtx.RUnlock()
-	copyHistory := make(map[string][]float64, len(s.gaugeHistory))
-
-	for key, slc := range s.gaugeHistory {
-		copySlc := make([]float64, len(slc))
-		copy(copySlc, slc)
-		copyHistory[key] = copySlc
-	}
-	return copyHistory
-}
-
-func (s *Storage) GetCounterHistory() map[string][]map[string]int64 {
-	s.mtx.RLock()
-	defer s.mtx.RUnlock()
-	copyHistory := make(map[string][]map[string]int64, len(s.counterHistory))
-
-	for key, slc := range s.counterHistory {
-		copySlc := make([]map[string]int64, 0, len(slc))
-		for _, mp := range slc {
-			copyMp := make(map[string]int64)
-			for k, v := range mp {
-				copyMp[k] = v
-			}
-			copySlc = append(copySlc, copyMp)
-		}
-		copyHistory[key] = copySlc
-	}
-	return copyHistory
 }
