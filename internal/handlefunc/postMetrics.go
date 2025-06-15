@@ -11,8 +11,6 @@ import (
 
 func Update(box *env.Box) g.HandlerFunc {
 	return func(ctx *g.Context) {
-		// switch ctx.Request.Header.Get("content-type") {
-		// case "text/plain":
 
 		metricType := ctx.Param(`metricType`)
 		metricName := ctx.Param(`metricName`)
@@ -47,11 +45,5 @@ func Update(box *env.Box) g.HandlerFunc {
 
 		respText := fmt.Sprintf("Metric with type - '%s' with name - '%s' with value - '%s' added successfuly.", metricType, metricName, metricVal)
 		ctx.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(respText))
-		// return
-
-		// default:
-		// 	ctx.String(http.StatusBadRequest, "content-type - '%s' not supported.", ctx.Request.Header.Get("content-type"))
-		// 	return
-		// }
 	}
 }
